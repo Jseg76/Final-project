@@ -10,7 +10,7 @@ tiles = []
 for j in range(20):
     row = []
     for i in range(12):
-        row.append(Tile(tileSize * i + 250, tileSize * j + 70,'backgroundtile.png', (tileSize,tileSize)))
+        row.append(BackgroundTile(tileSize * i + 250, tileSize * j + 70,'backgroundtile.png', (tileSize,tileSize)))
     tiles.append(row)
 
 
