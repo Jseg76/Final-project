@@ -3,13 +3,6 @@ pygame.init()
 
 #I dont know how to add custom fonts
 
-def get_image(sheet, xframe, yframe, width, height, scale, color):
-    image = pygame.Surface((width, height))
-    image.blit(sheet, (0, 0), ((xframe * width), (yframe * height), width, height))
-    image = pygame.transform.scale(image, (width * scale, height * scale))
-    image.set_colorkey(color)
-    return image
-
 class Text:
     def __init__(self, x, y, text, size, font, color):
         self.x = x
@@ -50,17 +43,31 @@ class Block:
         self.draw(screen)
 
 tileSize = 30
-class Tile:
-    def __init__(self, x, y, image):
+class BackgroundTile:
+    def __init__(self, x, y, image, scale):
         self.x = x
         self.y = y
-        self.image = pygame.Surface((tileSize, tileSize))
-        self.image.fill((255, 0, 255))
-        self.image = get_image(image, x, y, tileSize, tileSize, 1, (90, 0, 0))
+        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.transform.scale(self.image, scale)
 
     def draw(self, screen):
-        self.image.blit(screen, (self.x, self.y))
-        #need image to draw
+        screen.blit(self.image, (self.x, self.y))
+
+    def update(self, screen):
+        self.draw(screen)
+
+class WallTile:
+    def __init__(self, x, y, image, scale):
+        self.x = x
+        self.y = y
+        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.transform.scale(self.image, scale)
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.x, self.y))
+
+    def collide(self):
+        ...
 
     def update(self, screen):
         self.draw(screen)
