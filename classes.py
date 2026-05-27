@@ -2,6 +2,14 @@ import pygame
 pygame.init()
 
 #I dont know how to add custom fonts
+
+def get_image(sheet, xframe, yframe, width, height, scale, color):
+    image = pygame.Surface((width, height))
+    image.blit(sheet, (0, 0), ((xframe * width), (yframe * height), width, height))
+    image = pygame.transform.scale(image, (width * scale, height * scale))
+    image.set_colorkey(color)
+    return image
+
 class Text:
     def __init__(self, x, y, text, size, font, color):
         self.x = x
@@ -43,13 +51,15 @@ class Block:
 
 tileSize = 30
 class Tile:
-    def __init__(self, x, y):
+    def __init__(self, x, y, image):
         self.x = x
         self.y = y
-        self.size = tileSize
+        self.image = pygame.Surface((tileSize, tileSize))
+        self.image.fill((255, 0, 255))
+        self.image = get_image(image, x, y, tileSize, tileSize, 1, (90, 0, 0))
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.size, self.size))
+        self.image.blit(screen, (self.x, self.y))
         #need image to draw
 
     def update(self, screen):
