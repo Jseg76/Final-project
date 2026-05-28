@@ -1,7 +1,7 @@
 import pygame
 pygame.init()
 
-#I dont know how to add custom fonts
+#I don't know how to add custom fonts
 class Text:
     def __init__(self, x, y, text, size, font, color):
         self.x = x
@@ -50,7 +50,6 @@ class Tile:
 
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.size, self.size))
-        #need image to draw
 
     def update(self, screen):
         self.draw(screen)
