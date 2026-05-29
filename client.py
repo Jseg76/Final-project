@@ -12,12 +12,14 @@ tiles = []
 for j in range(20):
     row = []
     for i in range(12):
-        row.append(BackgroundTile(tileSize * i + 250, tileSize * j + 70,'backgroundtile.png', (tileSize,tileSize)))
+        row.append(Tile(tileSize * i + 250, tileSize * j + 70, 'bg'))
     tiles.append(row)
 
 test = Text(300, 20, 'This is text', 15, None, (255, 0, 0))
 
-blocks = []
+blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'pink', 'cyan']
+#        2*2off   L        2*2off   square      L        T     1*4
+player.blocks.append(Block(50, 100, 'red'))
 
 while running:
     for event in pygame.event.get():
@@ -28,6 +30,9 @@ while running:
     for row in tiles:
         for tile in row:
             tile.update(win)
+
+    for block in player.blocks:
+        block.update(win)
 
     pygame.display.flip()
     win.fill((255, 255, 255))
