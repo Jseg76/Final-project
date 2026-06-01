@@ -1,4 +1,5 @@
 from classes import *
+import random
 
 pygame.init()
 
@@ -12,14 +13,15 @@ tiles = []
 for j in range(20):
     row = []
     for i in range(12):
-        row.append(Tile(tileSize * i + 250, tileSize * j + 70, 'bg'))
+        row.append(Tile(220+tileSize*i, 70+tileSize*j, 'bg'))
     tiles.append(row)
 
 test = Text(300, 20, 'This is text', 15, None, (255, 0, 0))
 
-blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'pink', 'cyan']
-#        2*2off   L        2*2off   square      L        T     1*4
-player.blocks.append(Block(50, 100, 'red'))
+blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
+
+for i in range(3):
+    player.blocks.append(Block(680, 100+i*90, random.choice(blocks)))
 
 while running:
     for event in pygame.event.get():
@@ -30,6 +32,9 @@ while running:
     for row in tiles:
         for tile in row:
             tile.update(win)
+
+    pygame.draw.line(win, (140, 140, 140), (400, 70+20*tileSize), (400, 70), 3)
+    pygame.draw.rect(win, (140, 140, 140), (220, 70, 12*tileSize, 20*tileSize), 4)
 
     for block in player.blocks:
         block.update(win)

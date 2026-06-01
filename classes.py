@@ -42,21 +42,40 @@ class Block:
         self.blocks = []
 
         if self.type == 'red':
-            self.image = Image(x, y, 'redTile.png')
+            self.blocks.append(Image(x, y, 'redTile.png'))
+            self.blocks.append(Image(x, y-tileSize, 'redTile.png'))
+            self.blocks.append(Image(x+tileSize, y-tileSize, 'redTile.png'))
+            self.blocks.append(Image(x-tileSize, y, 'redTile.png'))
         elif self.type == 'blue':
-            ...
+            self.blocks.append(Image(x, y, 'blueTile.png'))
+            self.blocks.append(Image(x-tileSize, y, 'blueTile.png'))
+            self.blocks.append(Image(x+tileSize, y, 'blueTile.png'))
+            self.blocks.append(Image(x-tileSize, y-tileSize, 'blueTile.png'))
         elif self.type == 'green':
-            ...
+            self.blocks.append(Image(x, y, 'greenTile.png'))
+            self.blocks.append(Image(x, y-tileSize, 'greenTile.png'))
+            self.blocks.append(Image(x-tileSize, y-tileSize, 'greenTile.png'))
+            self.blocks.append(Image(x+tileSize, y, 'greenTile.png'))
         elif self.type == 'yellow':
-            ...
+            self.blocks.append(Image(x, y, 'yellowTile.png'))
+            self.blocks.append(Image(x, y-tileSize, 'yellowTile.png'))
+            self.blocks.append(Image(x+tileSize, y-tileSize, 'yellowTile.png'))
+            self.blocks.append(Image(x+tileSize, y, 'yellowTile.png'))
         elif self.type == 'orange':
-            ...
-        elif self.type == 'pink':
-            ...
+            self.blocks.append(Image(x, y, 'orangeTile.png'))
+            self.blocks.append(Image(x-tileSize, y, 'orangeTile.png'))
+            self.blocks.append(Image(x+tileSize, y, 'orangeTile.png'))
+            self.blocks.append(Image(x+tileSize, y-tileSize, 'orangeTile.png'))
+        elif self.type == 'purple':
+            self.blocks.append(Image(x, y, 'purpleTile.png'))
+            self.blocks.append(Image(x-tileSize, y, 'purpleTile.png'))
+            self.blocks.append(Image(x+tileSize, y, 'purpleTile.png'))
+            self.blocks.append(Image(x, y-tileSize, 'purpleTile.png'))
         elif self.type == 'cyan':
-            ...
-
-        self.blocks.append(self.image)
+            self.blocks.append(Image(x, y, 'cyanTile.png'))
+            self.blocks.append(Image(x-tileSize, y, 'cyanTile.png'))
+            self.blocks.append(Image(x+tileSize, y, 'cyanTile.png'))
+            self.blocks.append(Image(x+tileSize*2, y, 'cyanTile.png'))
 
     def move(self):
         key = pygame.key.get_pressed()
