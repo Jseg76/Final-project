@@ -14,7 +14,7 @@ for j in range(22):
     row = []
     for i in range(14):
         if j == 0 or j == 21 or i == 0 or i == 13:
-            row.append(Tile(190+ tileSize*i, 40+ tileSize*j, 'wall'))
+            row.append(Tile(190 + tileSize*i, 40 + tileSize*j, 'wall'))
         else:
             row.append(Tile(190 + tileSize * i, 40 + tileSize * j, 'bg'))
     tiles.append(row)
@@ -24,14 +24,12 @@ test = Text(300, 20, 'This is text', 15, None, (255, 0, 0))
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
 
 for i in range(3):
-    player.blocks.append(Block(680, 100+i*90, random.choice(blocks)))
+    player.futureBlocks.append(Block(680, 100+i*90, random.choice(blocks)))
 
-player.blocks.append(Block(190+tileSize*2, 40+tileSize*2, player.blocks[0].type))
-block = player.blocks[-1]
+player.blocks.append(Block(190+tileSize*2, 40+tileSize*2, player.futureBlocks[0].type))
+player.blocks.append(Block(190+tileSize*2, 400+tileSize*2, player.futureBlocks[1].type))
 
 while running:
-    block.update(win)
-    block.move(block.x, block.y, tiles)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -42,7 +40,7 @@ while running:
             tile.update(win)
 
     for block in player.blocks:
-        block.update(win)
+        block.update(win, tiles, player)
 
     pygame.draw.line(win, (140, 140, 140), (400, 40 + 20 * tileSize), (400, 70), 3)
 
