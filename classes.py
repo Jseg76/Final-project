@@ -30,7 +30,7 @@ class Image:
         self.y = y
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
-
+#
     def top_collisions(self, player):
         for block in player.blocks:
             for image in block.blocks:
