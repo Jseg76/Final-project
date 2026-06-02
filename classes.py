@@ -5,6 +5,7 @@ class Player:
     def __init__(self):
         self.score = 0
         self.blocks = []
+        self.upNext = []
 
 class Text:
     def __init__(self, x, y, text, size, font, color):
@@ -41,6 +42,8 @@ class Block:
         self.speed = 25
         self.tick = 0
         self.row = 2
+        self.stationary = False
+        self.selected = False
         self.blocks = []
         if self.type == 'red':
             self.blocks.append(Image(x, y, 'redTile.png'))
@@ -78,20 +81,25 @@ class Block:
             self.blocks.append(Image(x+tileSize, y, 'cyanTile.png'))
             self.blocks.append(Image(x+tileSize*2, y, 'cyanTile.png'))
 
-    def move(self, x, y, tiles):
+    def move(self, x, y, tiles, player):
         if self.tick % self.speed == 0:
-            if not self.top_collisions(tiles):
+            if not self.top_collisions(tiles, player):
                 self.y += tileSize
                 self.row += 1
+            else:
+                self.stationary = True
+                self.selected = False
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_DOWN] and not self.top_collisions(tiles):
+        if keys[pygame.K_DOWN] and not self.top_collisions(tiles, player) and not self.stationary:
             self.speed = 5
         else:
             self.speed = 25
-        if keys[pygame.K_RIGHT] and not self.right_collisions(tiles):
-            self.x += tileSize
-        if keys[pygame.K_LEFT] and not self.left_collisions(tiles):
-            self.x -= tileSize
+        if keys[pygame.K_RIGHT] and not self.right_collisions(tiles, player) and not self.stationary:
+            if self.tick % 5 == 0:
+                self.x += tileSize
+        if keys[pygame.K_LEFT] and not self.left_collisions(tiles, player) and not self.stationary:
+            if self.tick % 5 == 0:
+                self.x -= tileSize
         self.blocks.clear()
         if self.type == 'red':
             self.blocks.append(Image(x, y, 'redTile.png'))
@@ -133,26 +141,43 @@ class Block:
         for block in self.blocks:
             block.draw(screen)
 
-    def top_collisions(self, tiles):
+    def top_collisions(self, tiles, player):
         for block in self.blocks:
             for tile in tiles[-1]:
                 if block.y + tileSize >= tile.y and tile.type == 'wall':
                     return True
+            for pBlock in player.blocks:
+                for tile in pBlock.blocks:
+                    if block.y + tileSize == tile.y and not pBlock.selected:
+                        if block.x < tile.x + tileSize and block.x + tileSize > tile.x:
+                            return True
         return False
 
-    def right_collisions(self, tiles):
+    def right_collisions(self, tiles, player):
         for block in self.blocks:
             for tile in tiles[self.row]:
-                if block.x + tileSize >= 550 and tile.type == 'wall':
+                if block.x + tileSize >= 400 and tile.type == 'wall':
                     return True
+            for pBlock in player.blocks:
+                for tile in pBlock.blocks:
+                    if block.x + tileSize == tile.x - tileSize and not pBlock.selected:
+                        if block.y == tile.y:
+                            return True
+
         return False
 
-    def left_collisions(self, tiles):
+    def left_collisions(self, tiles, player):
         for block in self.blocks:
             for tile in tiles[self.row]:
                 if block.x <= 250 and tile.type == 'wall':
                     return True
+            for pBlock in player.blocks:
+                for tile in pBlock.blocks:
+                    if block.x - tileSize == tile.x + tileSize and not pBlock.selected:
+                        if block.y == tile.y:
+                            return True
         return False
+
 
     def update(self, screen):
         self.draw(screen)
