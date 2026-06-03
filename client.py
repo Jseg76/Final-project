@@ -21,6 +21,7 @@ for j in range(22):
 
 test = Text(300, 20, 'This is text', 15, None, (255, 0, 0))
 
+# blocks = ['red']
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
 
 for i in range(3):
