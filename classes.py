@@ -36,7 +36,7 @@ class Image:
             for image in block.blocks:
                 if image.x >= self.x+1 >= image.x + tileSize and self.y + tileSize * 1.2 >= image.y and not image:
                     return True
-                if
+                # if
         return False
 
     def draw(self, screen):
