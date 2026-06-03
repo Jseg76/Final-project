@@ -88,7 +88,8 @@ class Block:
     def move(self, x, y, tiles, player):
         if self.tick % self.speed == 0:
             if not self.top_collisions(tiles, player):
-                self.y += tileSize
+                for block in self.blocks:
+                    block.y += tileSize
                 self.row += 1
             else:
                 self.stationary = True
@@ -102,48 +103,14 @@ class Block:
             self.speed = 25
         if keys[pygame.K_RIGHT] and not self.right_collisions(tiles, player) and not self.stationary:
             if self.aTick % 5 == 0:
-                self.x += tileSize
+                for block in self.blocks:
+                    block.x += tileSize
                 self.aTick = 0
         if keys[pygame.K_LEFT] and not self.left_collisions(tiles, player) and not self.stationary:
             if self.aTick % 5 == 0:
-                self.x -= tileSize
+                for block in self.blocks:
+                    block.x -= tileSize
                 self.aTick = 0
-        self.blocks.clear()
-        if self.type == 'red':
-            self.blocks.append(Image(x, y, 'altRedTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'altRedTile.png'))
-            self.blocks.append(Image(x+tileSize, y-tileSize, 'altRedTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'altRedTile.png'))
-        elif self.type == 'blue':
-            self.blocks.append(Image(x, y, 'blueTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'blueTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'blueTile.png'))
-            self.blocks.append(Image(x-tileSize, y-tileSize, 'blueTile.png'))
-        elif self.type == 'green':
-            self.blocks.append(Image(x, y, 'greenTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'greenTile.png'))
-            self.blocks.append(Image(x-tileSize, y-tileSize, 'greenTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'greenTile.png'))
-        elif self.type == 'yellow':
-            self.blocks.append(Image(x, y, 'yellowTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'yellowTile.png'))
-            self.blocks.append(Image(x+tileSize, y-tileSize, 'yellowTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'yellowTile.png'))
-        elif self.type == 'orange':
-            self.blocks.append(Image(x, y, 'orangeTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'orangeTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'orangeTile.png'))
-            self.blocks.append(Image(x+tileSize, y-tileSize, 'orangeTile.png'))
-        elif self.type == 'purple':
-            self.blocks.append(Image(x, y, 'purpleTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'purpleTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'purpleTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'purpleTile.png'))
-        elif self.type == 'cyan':
-            self.blocks.append(Image(x, y, 'cyanTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'cyanTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'cyanTile.png'))
-            self.blocks.append(Image(x+tileSize*2, y, 'cyanTile.png'))
 
     def draw(self, screen):
         for block in self.blocks:
@@ -164,7 +131,7 @@ class Block:
     def right_collisions(self, tiles, player):
         for block in self.blocks:
             for tile in tiles[self.row]:
-                if block.x + tileSize >= 600 and tile.type == 'wall':
+                if block.x + tileSize >= 630 and tile.type == 'wall':
                     return True
             for pBlock in player.blocks:
                 for tile in pBlock.blocks:
@@ -198,7 +165,7 @@ class Tile:
         self.type = type
 
         if type == 'bg':
-            self.image = pygame.image.load('redTile.png')
+            self.image = pygame.image.load('bgTile.png')
             self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
 
         elif type == 'wall':
