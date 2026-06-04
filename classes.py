@@ -37,6 +37,14 @@ class Image:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
+    def rotate(self, x, y):
+        dx = self.x - x
+        dy = self.y - y
+        self.x = dy
+        self.y = -dx
+        self.x += x
+        self.y += y
+
 class Block:
     def __init__(self, x, y, type):
         self.x = x
@@ -45,51 +53,56 @@ class Block:
         self.speed = 25
         self.tick = 0
         self.aTick = 0
+        self.rTick = 0
         self.row = 2
         self.stationary = False
         self.selected = False
         self.blocks = []
         if self.type == 'red':
-            self.blocks.append(Image(x, y, 'redTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'redTile.png'))
-            self.blocks.append(Image(x+tileSize, y-tileSize, 'redTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'redTile.png'))
+            self.add(Image(x, y, 'redTile.png'))
+            self.add(Image(x, y-tileSize, 'redTile.png'))
+            self.add(Image(x+tileSize, y-tileSize, 'redTile.png'))
+            self.add(Image(x-tileSize, y, 'redTile.png'))
         elif self.type == 'blue':
-            self.blocks.append(Image(x, y, 'blueTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'blueTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'blueTile.png'))
-            self.blocks.append(Image(x-tileSize, y-tileSize, 'blueTile.png'))
+            self.add(Image(x, y, 'blueTile.png'))
+            self.add(Image(x-tileSize, y, 'blueTile.png'))
+            self.add(Image(x+tileSize, y, 'blueTile.png'))
+            self.add(Image(x-tileSize, y-tileSize, 'blueTile.png'))
         elif self.type == 'green':
-            self.blocks.append(Image(x, y, 'greenTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'greenTile.png'))
-            self.blocks.append(Image(x-tileSize, y-tileSize, 'greenTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'greenTile.png'))
+            self.add(Image(x, y, 'greenTile.png'))
+            self.add(Image(x, y-tileSize, 'greenTile.png'))
+            self.add(Image(x-tileSize, y-tileSize, 'greenTile.png'))
+            self.add(Image(x+tileSize, y, 'greenTile.png'))
         elif self.type == 'yellow':
-            self.blocks.append(Image(x, y, 'yellowTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'yellowTile.png'))
-            self.blocks.append(Image(x+tileSize, y-tileSize, 'yellowTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'yellowTile.png'))
+            self.add(Image(x, y, 'yellowTile.png'))
+            self.add(Image(x, y-tileSize, 'yellowTile.png'))
+            self.add(Image(x+tileSize, y-tileSize, 'yellowTile.png'))
+            self.add(Image(x+tileSize, y, 'yellowTile.png'))
         elif self.type == 'orange':
-            self.blocks.append(Image(x, y, 'orangeTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'orangeTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'orangeTile.png'))
-            self.blocks.append(Image(x+tileSize, y-tileSize, 'orangeTile.png'))
+            self.add(Image(x, y, 'orangeTile.png'))
+            self.add(Image(x-tileSize, y, 'orangeTile.png'))
+            self.add(Image(x+tileSize, y, 'orangeTile.png'))
+            self.add(Image(x+tileSize, y-tileSize, 'orangeTile.png'))
         elif self.type == 'purple':
-            self.blocks.append(Image(x, y, 'purpleTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'purpleTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'purpleTile.png'))
-            self.blocks.append(Image(x, y-tileSize, 'purpleTile.png'))
+            self.add(Image(x, y, 'purpleTile.png'))
+            self.add(Image(x-tileSize, y, 'purpleTile.png'))
+            self.add(Image(x+tileSize, y, 'purpleTile.png'))
+            self.add(Image(x, y-tileSize, 'purpleTile.png'))
         elif self.type == 'cyan':
-            self.blocks.append(Image(x, y, 'cyanTile.png'))
-            self.blocks.append(Image(x-tileSize, y, 'cyanTile.png'))
-            self.blocks.append(Image(x+tileSize, y, 'cyanTile.png'))
-            self.blocks.append(Image(x+tileSize*2, y, 'cyanTile.png'))
+            self.add(Image(x, y, 'cyanTile.png'))
+            self.add(Image(x-tileSize, y, 'cyanTile.png'))
+            self.add(Image(x+tileSize, y, 'cyanTile.png'))
+            self.add(Image(x+tileSize*2, y, 'cyanTile.png'))
+
+    def add(self, image):
+        self.blocks.append(image)
 
     def move(self, x, y, tiles, player):
         if self.tick % self.speed == 0:
             if not self.top_collisions(tiles, player):
                 for block in self.blocks:
                     block.y += tileSize
+                self.y += tileSize
                 self.row += 1
             else:
                 self.stationary = True
@@ -97,6 +110,9 @@ class Block:
         keys = pygame.key.get_pressed()
         if self.aTick < 5:
             self.aTick += 1
+        if self.rTick < 5:
+            self.rTick += 1
+
         if keys[pygame.K_DOWN] and not self.top_collisions(tiles, player) and not self.stationary:
             self.speed = 5
         else:
@@ -105,12 +121,19 @@ class Block:
             if self.aTick % 5 == 0:
                 for block in self.blocks:
                     block.x += tileSize
+                self.x += tileSize
                 self.aTick = 0
         if keys[pygame.K_LEFT] and not self.left_collisions(tiles, player) and not self.stationary:
             if self.aTick % 5 == 0:
                 for block in self.blocks:
                     block.x -= tileSize
+                self.x -= tileSize
                 self.aTick = 0
+
+        if keys[pygame.K_UP]:
+            if self.rTick % 5 == 0:
+                for block in self.blocks:
+                    block.rotate(self.x, self.y)
 
     def draw(self, screen):
         for block in self.blocks:
