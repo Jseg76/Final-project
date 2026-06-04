@@ -8,16 +8,14 @@ win = pygame.display.set_mode((1000, 700))
 
 player = Player()
 
-tiles = []
-
 for j in range(22):
     row = []
     for i in range(18):
         if j == 0 or j == 21 or i == 0 or i == 17:
-            row.append(Tile(130+ tileSize*i, 40+ tileSize*j, 'wall'))
+            row.append(Tile(130+ tileSize*i, 40+ tileSize*j, j, 'wall'))
         else:
-            row.append(Tile(130 + tileSize * i, 40 + tileSize * j, 'bg'))
-    tiles.append(row)
+            row.append(Tile(130 + tileSize * i, 40 + tileSize * j, j, 'bg'))
+    player.tiles.append(row)
 
 test = Text(300, 20, 'This is text', 15, None, (255, 0, 0))
 
@@ -41,15 +39,15 @@ while running:
             block.y -= 90
         player.upNext.append(Block(800, 300-3*90, random.choice(blocks)))
     block.update(win)
-    block.move(block.x, block.y, tiles, player)
+    block.move(block.x, block.y, player.tiles, player)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
     test.draw(win)
-    for row in tiles:
+    for row in player.tiles:
         for tile in row:
-            tile.update(win)
+            tile.update(win, player.blocks, player.tiles)
 
     for block in player.upNext:
         block.update(win)
