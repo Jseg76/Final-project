@@ -27,13 +27,13 @@ blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
 for i in range(3):
     player.upNext.append(Block(800, 300-i*90, random.choice(blocks)))
 
-player.blocks.append(Block(130+tileSize*2, 40+tileSize*2, random.choice(blocks)))
+player.blocks.append(Block(130+tileSize*5, 40+tileSize*2, random.choice(blocks)))
 block = player.blocks[-1]
 block.selected = True
 
 while running:
     if block.stationary:
-        player.blocks.append(Block(130 + tileSize * 2, 40 + tileSize * 2, player.upNext[-1].type))
+        player.blocks.append(Block(130 + tileSize * 5, 40 + tileSize * 2, player.upNext[-1].type))
         block = player.blocks[-1]
         block.selected = True
         player.upNext.pop(-1)
