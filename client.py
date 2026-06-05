@@ -19,7 +19,7 @@ for j in range(22):
 
 test = Text(300, 20, 'This is text', 15, None, (255, 0, 0))
 
-# blocks = ['red']
+# blocks = ['purple']
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
 
 for i in range(3):
@@ -38,7 +38,6 @@ while running:
         for block in player.upNext:
             block.y -= 90
         player.upNext.append(Block(800, 300-3*90, random.choice(blocks)))
-    block.update(win)
     block.move(block.x, block.y, player.tiles, player)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -47,13 +46,13 @@ while running:
     test.draw(win)
     for row in player.tiles:
         for tile in row:
-            tile.update(win, player.blocks, player.tiles)
+            tile.update(win, player.blocks, player.tiles, player)
 
     for block in player.upNext:
-        block.update(win)
+        block.update(win, player.tiles, player)
 
     for block in player.blocks:
-        block.update(win)
+        block.update(win, player.tiles, player)
 
     pygame.draw.line(win, (140, 140, 140), (400, 20 * tileSize + 70), (400, 70 ), 3)
 

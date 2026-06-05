@@ -29,9 +29,10 @@ class Text:
         self.draw(screen)
 
 class Image:
-    def __init__(self, x, y, image):
+    def __init__(self, x, y, image, type):
         self.x = x
         self.y = y
+        self.type = type
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
 
@@ -60,54 +61,45 @@ class Block:
         self.selected = False
         self.blocks = []
         if self.type == 'red':
-            self.add(Image(x, y, 'redTile.png'))
-            self.add(Image(x, y-tileSize, 'redTile.png'))
-            self.add(Image(x+tileSize, y-tileSize, 'redTile.png'))
-            self.add(Image(x-tileSize, y, 'redTile.png'))
+            self.add(Image(x, y, 'redTile.png', self.type))
+            self.add(Image(x, y-tileSize, 'redTile.png', self.type))
+            self.add(Image(x+tileSize, y-tileSize, 'redTile.png', self.type))
+            self.add(Image(x-tileSize, y, 'redTile.png', self.type))
         elif self.type == 'blue':
-            self.add(Image(x, y, 'blueTile.png'))
-            self.add(Image(x-tileSize, y, 'blueTile.png'))
-            self.add(Image(x+tileSize, y, 'blueTile.png'))
-            self.add(Image(x-tileSize, y-tileSize, 'blueTile.png'))
+            self.add(Image(x, y, 'blueTile.png', self.type))
+            self.add(Image(x-tileSize, y, 'blueTile.png', self.type))
+            self.add(Image(x+tileSize, y, 'blueTile.png', self.type))
+            self.add(Image(x-tileSize, y-tileSize, 'blueTile.png', self.type))
         elif self.type == 'green':
-            self.add(Image(x, y, 'greenTile.png'))
-            self.add(Image(x, y-tileSize, 'greenTile.png'))
-            self.add(Image(x-tileSize, y-tileSize, 'greenTile.png'))
-            self.add(Image(x+tileSize, y, 'greenTile.png'))
+            self.add(Image(x, y, 'greenTile.png', self.type))
+            self.add(Image(x, y-tileSize, 'greenTile.png', self.type))
+            self.add(Image(x-tileSize, y-tileSize, 'greenTile.png', self.type))
+            self.add(Image(x+tileSize, y, 'greenTile.png', self.type))
         elif self.type == 'yellow':
-            self.add(Image(x, y, 'yellowTile.png'))
-            self.add(Image(x, y-tileSize, 'yellowTile.png'))
-            self.add(Image(x+tileSize, y-tileSize, 'yellowTile.png'))
-            self.add(Image(x+tileSize, y, 'yellowTile.png'))
+            self.add(Image(x, y, 'yellowTile.png', self.type))
+            self.add(Image(x, y-tileSize, 'yellowTile.png', self.type))
+            self.add(Image(x+tileSize, y-tileSize, 'yellowTile.png', self.type))
+            self.add(Image(x+tileSize, y, 'yellowTile.png', self.type))
         elif self.type == 'orange':
-            self.add(Image(x, y, 'orangeTile.png'))
-            self.add(Image(x-tileSize, y, 'orangeTile.png'))
-            self.add(Image(x+tileSize, y, 'orangeTile.png'))
-            self.add(Image(x+tileSize, y-tileSize, 'orangeTile.png'))
+            self.add(Image(x, y, 'orangeTile.png', self.type))
+            self.add(Image(x-tileSize, y, 'orangeTile.png', self.type))
+            self.add(Image(x+tileSize, y, 'orangeTile.png', self.type))
+            self.add(Image(x+tileSize, y-tileSize, 'orangeTile.png', self.type))
         elif self.type == 'purple':
-            self.add(Image(x, y, 'purpleTile.png'))
-            self.add(Image(x-tileSize, y, 'purpleTile.png'))
-            self.add(Image(x+tileSize, y, 'purpleTile.png'))
-            self.add(Image(x, y-tileSize, 'purpleTile.png'))
+            self.add(Image(x, y, 'purpleTile.png', self.type))
+            self.add(Image(x-tileSize, y, 'purpleTile.png', self.type))
+            self.add(Image(x+tileSize, y, 'purpleTile.png', self.type))
+            self.add(Image(x, y-tileSize, 'purpleTile.png', self.type))
         elif self.type == 'cyan':
-            self.add(Image(x, y, 'cyanTile.png'))
-            self.add(Image(x-tileSize, y, 'cyanTile.png'))
-            self.add(Image(x+tileSize, y, 'cyanTile.png'))
-            self.add(Image(x+tileSize*2, y, 'cyanTile.png'))
+            self.add(Image(x, y, 'cyanTile.png', self.type))
+            self.add(Image(x-tileSize, y, 'cyanTile.png', self.type))
+            self.add(Image(x+tileSize, y, 'cyanTile.png', self.type))
+            self.add(Image(x+tileSize*2, y, 'cyanTile.png', self.type))
 
     def add(self, image):
         self.blocks.append(image)
 
     def move(self, x, y, tiles, player):
-        if self.tick % self.speed == 0:
-            if not self.top_collisions(tiles, player):
-                for block in self.blocks:
-                    block.y += tileSize
-                self.y += tileSize
-                self.row += 1
-            else:
-                self.stationary = True
-                self.selected = False
         keys = pygame.key.get_pressed()
         if self.aTick < 5:
             self.aTick += 1
@@ -134,8 +126,8 @@ class Block:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP and self.type != 'yellow':
-                    for block in self.blocks:
-                        block.rotate(self.x, self.y)
+                    for tile in self.blocks:
+                        tile.rotate(self.x, self.y)
                         self.rTick = 0
 
     def draw(self, screen):
@@ -179,8 +171,17 @@ class Block:
                             return True
         return False
 
-    def update(self, screen):
+    def update(self, screen, tiles, player):
         self.draw(screen)
+        if self.tick % self.speed == 0:
+            if not self.top_collisions(tiles, player):
+                for block in self.blocks:
+                    block.y += tileSize
+                self.y += tileSize
+                self.row += 1
+            else:
+                self.stationary = True
+                self.selected = False
         self.tick += 1
 
 class Tile:
@@ -190,7 +191,8 @@ class Tile:
         self.y = y
         self.size = tileSize
         self.type = type
-        self.occupiedImage = Image(x, y, 'redTile.png')
+        self.cleared = False
+        self.occupiedImage = Image(10000, 10000, 'redTile.png', 'nonExistant')
         self.occupied = False
 
         if type == 'bg':
@@ -201,15 +203,27 @@ class Tile:
             self.image = pygame.image.load('wallTile.png')
             self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
 
+    def unoccupy(self, player):
+        print(f"{self.occupiedImage.type}, {self.occupiedImage.x}, {self.occupiedImage.y}, occupied block")
+        self.occupied = False
+        for block in player.blocks:
+            for tile in block.blocks:
+                print(f"{tile.type}, {tile.x}, {tile.y}, physical block")
+                if tile.type == self.occupiedImage.type and tile.x == self.occupiedImage.x and tile.y == self.occupiedImage.y:
+                    block.blocks.remove(tile)
+            print(len(block.blocks))
+        # print(BREAK)
+        self.cleared = False
+
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
-    def update(self, screen, blocks, tiles):
+    def update(self, screen, blocks, tiles, player):
         self.draw(screen)
         self.occupied = False
         for block in blocks:
             for image in block.blocks:
-                if image.x == self.x and image.y == self.y:
+                if image.x == self.x and image.y == self.y and block.stationary:
                     self.occupied = True
                     self.occupiedImage = image
 
@@ -218,10 +232,12 @@ class Tile:
             for tile in row:
                 if tile.occupied:
                     numTilesOcupied += 1
-            print(numTilesOcupied, len(row))
+                    tile.cleared = True
             if numTilesOcupied == len(row) - 2:
-                print('cleared!')
-                self.occupiedImage.x = 62789
+                for tile in row:
+                    if tile.cleared:
+                        tile.unoccupy(player)
+
 
 
 
