@@ -8,20 +8,17 @@ win = pygame.display.set_mode((1000, 700))
 
 player = Player()
 
-tiles = []
-
 for j in range(22):
     row = []
     for i in range(18):
         if j == 0 or j == 21 or i == 0 or i == 17:
-            row.append(Tile(130+ tileSize*i, 40+ tileSize*j, 'wall'))
+            row.append(Tile(130+ tileSize*i, 40+ tileSize*j, j, 'wall'))
         else:
-            row.append(Tile(130 + tileSize * i, 40 + tileSize * j, 'bg'))
-    tiles.append(row)
+            row.append(Tile(130 + tileSize * i, 40 + tileSize * j, j, 'bg'))
+    player.tiles.append(row)
 
-test = Text(300, 20, 'This is text', 15, None, (255, 0, 0))
+scoreText = Text(750, 40, 50, None, (0,0,0))
 
-# blocks = ['red']
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
 
 for i in range(3):
@@ -40,24 +37,24 @@ while running:
         for block in player.upNext:
             block.y -= 90
         player.upNext.append(Block(800, 300-3*90, random.choice(blocks)))
-    block.update(win)
-    block.move(block.x, block.y, tiles, player)
+    block.move(player.tiles, player)
+
+    scoreText.update(win, f'Score: {player.score}')
+    for row in player.tiles:
+        for tile in row:
+            tile.update(win, player.blocks, player.tiles, player)
+
+    for block in player.upNext:
+        block.update(win, player.tiles, player)
+
+    for block in player.blocks:
+        block.update(win, player.tiles, player)
+
+    pygame.draw.line(win, (140, 140, 140), (400, 20 * tileSize + 70), (400, 70 ), 3)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-    test.draw(win)
-    for row in tiles:
-        for tile in row:
-            tile.update(win)
-
-    for block in player.upNext:
-        block.update(win)
-
-    for block in player.blocks:
-        block.update(win)
-
-    pygame.draw.line(win, (140, 140, 140), (400, 20 * tileSize + 70), (400, 70 ), 3)
 
     pygame.display.flip()
     win.fill((255, 255, 255))
