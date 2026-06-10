@@ -1,12 +1,12 @@
 from twoPlayerClasses import *
 import random
 
-# push
-
 pygame.init()
 
 running = True; clock = pygame.time.Clock()
 win = pygame.display.set_mode((1000, 700))
+
+lost = False
 
 player = Player()
 
@@ -30,9 +30,9 @@ for j in range(12):
 
 scoreText = Text(775, 80, 50, None, (0,0,0))
 upNextText = Text(755, 130, 70, None, (0,0,0))
+loseText = Text(400, 300, 120, None, (20,0,0))
 
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
-# blocks = ['red']
 
 for i in range(3):
     player.upNext.append(Block(130 + tileSize * 23, (40 + tileSize * 14)-i*tileSize * 3, random.choice(blocks),1))
@@ -45,26 +45,34 @@ block2 = player.blocks[-1]
 block2.selected = True
 
 while running:
-    if block1.stationary:
-        player.blocks.append(Block(130 + tileSize * 10, 40 + tileSize, player.upNext[-1].type, 1))
-        block1 = player.blocks[-1]
-        block1.selected = True
-        player.upNext.pop(-1)
-        for block in player.upNext:
-            for tile in block.blocks:
-                tile.y -= tileSize * 3
-        player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks),1))
-    if block2.stationary:
-        player.blocks.append(Block(130 + tileSize * 2, 40 + tileSize, player.upNext[-1].type, 2))
-        block2 = player.blocks[-1]
-        block2.selected = True
-        player.upNext.pop(-1)
-        for block in player.upNext:
-            for tile in block.blocks:
-                tile.y -= tileSize * 3
-        player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks), 2))
-    block1.move(player.tiles, player)
-    block2.move(player.tiles, player)
+    if not lost:
+        if block1.stationary:
+            if block1.y <= 40+tileSize*2 and block1.stationary:
+                lost = True
+            player.blocks.append(Block(130 + tileSize * 10, 40 + tileSize, player.upNext[-1].type, 1))
+            block1 = player.blocks[-1]
+            block1.selected = True
+            player.upNext.pop(-1)
+            for block in player.upNext:
+                for tile in block.blocks:
+                    tile.y -= tileSize * 3
+            player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks),1))
+
+        if block2.stationary:
+            if block2.y <= 40+tileSize*2 and block2.stationary:
+                lost = True
+            player.blocks.append(Block(130 + tileSize * 2, 40 + tileSize, player.upNext[-1].type, 2))
+            block2 = player.blocks[-1]
+            block2.selected = True
+            player.upNext.pop(-1)
+            for block in player.upNext:
+                for tile in block.blocks:
+                    tile.y -= tileSize * 3
+            player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks), 2))
+
+
+        block1.move(player.tiles, player)
+        block2.move(player.tiles, player)
 
     scoreText.update(win, f'Score: {player.score}')
     upNextText.update(win, f'Up Next')
@@ -80,18 +88,24 @@ while running:
         block.draw(win)
 
     for block in player.blocks:
-        block.update(win, player.tiles, player)
+        if not lost:
+            block.update(win, player.tiles, player)
+        else:
+            block.draw(win)
 
     pygame.draw.line(win, (140, 140, 140), (400, 20 * tileSize + 70), (400, 70 ), 3)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN and not lost:
             if event.key == pygame.K_UP:
                 block1.rotate(player)
             if event.key == pygame.K_w:
                 block2.rotate(player)
+
+    if lost:
+        loseText.update(win, 'You lose!')
 
     pygame.display.flip()
     win.fill((255, 255, 255))
