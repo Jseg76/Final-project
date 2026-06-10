@@ -10,6 +10,7 @@ class Player:
         self.blocks = []
         self.upNext = []
         self.tiles = []
+        self.nextTiles = []
 
 class Text:
     def __init__(self, x, y, size, font, color):
@@ -34,6 +35,7 @@ class Image:
         self.x = x
         self.y = y
         self.type = type
+        self.floater = False
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
 
@@ -60,49 +62,59 @@ class Block:
         self.x = x
         self.y = y
         self.type = type
+        self.rotations = 0
         self.speed = 25
         self.tick = 0
         self.aTick = 0
         self.rTick = 0
+        self.nonFloatingTiles = 2
         self.row = 2
         self.stationary = False
         self.selected = False
+        self.rotated = False
         self.blocks = []
         if self.type == 'red':
             self.add(Image(x, y, 'redTile.png', self.type))
             self.add(Image(x, y-tileSize, 'redTile.png', self.type))
             self.add(Image(x+tileSize, y-tileSize, 'redTile.png', self.type))
             self.add(Image(x-tileSize, y, 'redTile.png', self.type))
+            self.floatingTiles = 1
         elif self.type == 'blue':
             self.add(Image(x, y, 'blueTile.png', self.type))
             self.add(Image(x-tileSize, y, 'blueTile.png', self.type))
             self.add(Image(x+tileSize, y, 'blueTile.png', self.type))
             self.add(Image(x-tileSize, y-tileSize, 'blueTile.png', self.type))
+            self.floatingTiles = 1
         elif self.type == 'green':
             self.add(Image(x, y, 'greenTile.png', self.type))
             self.add(Image(x, y-tileSize, 'greenTile.png', self.type))
             self.add(Image(x-tileSize, y-tileSize, 'greenTile.png', self.type))
             self.add(Image(x+tileSize, y, 'greenTile.png', self.type))
+            self.floatingTiles = 1
         elif self.type == 'yellow':
             self.add(Image(x, y, 'yellowTile.png', self.type))
             self.add(Image(x, y-tileSize, 'yellowTile.png', self.type))
             self.add(Image(x+tileSize, y-tileSize, 'yellowTile.png', self.type))
             self.add(Image(x+tileSize, y, 'yellowTile.png', self.type))
+            self.floatingTiles = 0
         elif self.type == 'orange':
             self.add(Image(x, y, 'orangeTile.png', self.type))
             self.add(Image(x-tileSize, y, 'orangeTile.png', self.type))
             self.add(Image(x+tileSize, y, 'orangeTile.png', self.type))
             self.add(Image(x+tileSize, y-tileSize, 'orangeTile.png', self.type))
+            self.floatingTiles = 1
         elif self.type == 'purple':
             self.add(Image(x, y, 'purpleTile.png', self.type))
             self.add(Image(x-tileSize, y, 'purpleTile.png', self.type))
             self.add(Image(x+tileSize, y, 'purpleTile.png', self.type))
             self.add(Image(x, y-tileSize, 'purpleTile.png', self.type))
+            self.floatingTiles = 1
         elif self.type == 'cyan':
             self.add(Image(x, y, 'cyanTile.png', self.type))
             self.add(Image(x-tileSize, y, 'cyanTile.png', self.type))
             self.add(Image(x+tileSize, y, 'cyanTile.png', self.type))
             self.add(Image(x+tileSize*2, y, 'cyanTile.png', self.type))
+            self.floatingTiles = 0
 
     def add(self, image):
         self.blocks.append(image)
@@ -129,7 +141,22 @@ class Block:
                 self.x -= tileSize
                 self.aTick = 0
 
-    def testCollisions(self, player):
+    def rotate(self, player):
+        if not self.type == 'yellow':
+            self.rotations += 1
+            for image in self.blocks:
+                image.rotate(self.x, self.y, player.tiles)
+            if self.test_collisions(player):
+                self.rotations -= 1
+                for i in range(3):
+                    for image in self.blocks:
+                        image.rotate(self.x, self.y, player.tiles)
+
+    def draw(self, screen):
+        for block in self.blocks:
+            block.draw(screen)
+
+    def test_collisions(self, player):
         for block in self.blocks:
             if block.x == 640 or block.x == 130 or block.y == 670:
                 return True
@@ -140,25 +167,11 @@ class Block:
                             return True
         return False
 
-    def rotate(self, player):
-        if not self.type == 'yellow':
-            for image in self.blocks:
-                image.rotate(self.x, self.y, player.tiles)
-            if self.testCollisions(player):
-                print(player.tiles[-1][1].y)
-                for i in range(3):
-                    for image in self.blocks:
-                        image.rotate(self.x, self.y, player.tiles)
-
-    def draw(self, screen):
-        for block in self.blocks:
-            block.draw(screen)
-
     def top_collisions(self, tiles, player):
         for block in self.blocks:
             for tile in tiles[-1]:
                 if block.y + tileSize >= tile.y and tile.type == 'wall':
-                    return True
+                        return True
             for pBlock in player.blocks:
                 for tile in pBlock.blocks:
                     if block.y + tileSize == tile.y and not tile in self.blocks:
@@ -191,6 +204,38 @@ class Block:
                             return True
         return False
 
+    def seperate(self, player):
+        if self.type == 'cyan':
+            self.nonFloatingTiles = -1
+        else:
+            self.nonFloatingTiles = 0
+        if self.rotations % 2 == 1:
+            self.rotated = True
+        else:
+            self.rotated = False
+        if self.rotated:
+            for block in self.blocks:
+                block.floater = True
+                for alsoBlock in self.blocks:
+                    if block.y + tileSize == alsoBlock.y:
+                        if block.x < alsoBlock.x + tileSize and block.x + tileSize > alsoBlock.x:
+                            self.nonFloatingTiles += 1
+                            block.floater = False
+                    else:
+                        for tile in player.tiles[-1]:
+                            if block.y + tileSize >= tile.y and tile.type == 'wall':
+                                block.floater = False
+                        for pBlock in player.blocks:
+                            for tile in pBlock.blocks:
+                                if block.y + tileSize == tile.y:
+                                    if block.x < tile.x + tileSize and block.x + tileSize > tile.x:
+                                        block.floater = False
+            if len(self.blocks)-self.nonFloatingTiles == 3 or len(self.blocks) == 2:
+                for block in self.blocks:
+                    if block.floater:
+                        block.y += tileSize
+                        block.floater = False
+
     def update(self, screen, tiles, player):
         self.draw(screen)
         if self.tick % self.speed == 0:
@@ -203,6 +248,7 @@ class Block:
                 if self.speed == 5:
                     player.score += 1
             else:
+                self.seperate(player)
                 self.stationary = True
         self.tick += 1
 

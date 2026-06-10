@@ -17,13 +17,23 @@ for j in range(22):
             row.append(Tile(130 + tileSize * i, 40 + tileSize * j, j, 'bg'))
     player.tiles.append(row)
 
-scoreText = Text(750, 40, 50, None, (0,0,0))
+for j in range(12):
+    row = []
+    for i in range(8):
+        if j == 0 or j == 11 or i == 0 or i == 7:
+            row.append(Tile(130 + tileSize * (i + 20), 40 + tileSize * (j + 5), j, 'wall'))
+        else:
+            row.append(Tile(130 + tileSize * (i + 20), 40 + tileSize * (j + 5), j, 'bg'))
+    player.nextTiles.append(row)
+
+scoreText = Text(775, 80, 50, None, (0,0,0))
+upNextText = Text(755, 130, 70, None, (0,0,0))
 
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
-# blocks = ['cyan']
+# blocks = ['red']
 
 for i in range(3):
-    player.upNext.append(Block(800, 300-i*90, random.choice(blocks)))
+    player.upNext.append(Block(130 + tileSize * 23, (40 + tileSize * 14)-i*tileSize * 3, random.choice(blocks)))
 
 player.blocks.append(Block(130+tileSize*5, 40+tileSize*2, random.choice(blocks)))
 block = player.blocks[-1]
@@ -31,22 +41,28 @@ block.selected = True
 
 while running:
     if block.stationary:
-        player.blocks.append(Block(130 + tileSize * 5, 40 + tileSize * 2, player.upNext[-1].type))
+        player.blocks.append(Block(130 + tileSize * 10, 40 + tileSize, player.upNext[-1].type))
         block = player.blocks[-1]
         block.selected = True
         player.upNext.pop(-1)
         for block in player.upNext:
-            block.y -= 90
-        player.upNext.append(Block(800, 300-3*90, random.choice(blocks)))
+            for tile in block.blocks:
+                tile.y -= tileSize * 3
+        player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks)))
     block.move(player.tiles, player)
 
     scoreText.update(win, f'Score: {player.score}')
+    upNextText.update(win, f'Up Next')
     for row in player.tiles:
         for tile in row:
             tile.update(win, player.blocks, player.tiles, player)
 
+    for row in player.nextTiles:
+        for tile in row:
+            tile.draw(win)
+
     for block in player.upNext:
-        block.update(win, player.tiles, player)
+        block.draw(win)
 
     for block in player.blocks:
         block.update(win, player.tiles, player)
