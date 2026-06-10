@@ -1,11 +1,11 @@
 import pygame
 
-# push
-
 pygame.init()
 
+#this sets the tile sie to 30 pixels
 tileSize = 30
 
+#this creates the player class and initilizes its variales
 class Player:
     def __init__(self):
         self.score = 0
@@ -14,6 +14,7 @@ class Player:
         self.tiles = []
         self.nextTiles = []
 
+#this initilizes the text class
 class Text:
     def __init__(self, x, y, size, font, color):
         self.x = x
@@ -23,15 +24,19 @@ class Text:
         self.size = size
         self.color = color
 
+    #this function draws the text on teh screen
+
     def draw(self, screen):
         font = pygame.font.Font(self.font, self.size)
         text = font.render(self.text, True, self.color)
         screen.blit(text, (self.x, self.y))
 
+    #this function updates the text whenever there is a change to it
     def update(self, screen, text):
         self.text = text
         self.draw(screen)
 
+#this initilizes the image class
 class Image:
     def __init__(self, x, y, image, type):
         self.x = x
@@ -41,14 +46,17 @@ class Image:
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
 
+    #this checks if the image is colliding with another object
     def collide(self, x, y, other):
         if other.x <= x+5 <= other.x+tileSize and other.y <= y+5 <= other.y+tileSize:
             return True
         return False
 
+    #this draws the image on the screen
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
+    #this rotates the image whenever the function is called
     def rotate(self, x, y, tiles):
         dx = self.x - x
         dy = self.y - y
@@ -59,6 +67,7 @@ class Image:
                 self.x += x
                 self.y += y
 
+#this
 class Block:
     def __init__(self, x, y, type, player):
         self.x = x
