@@ -1,4 +1,4 @@
-from classes import *
+from twoPlayerClasses import *
 import random
 
 pygame.init()
@@ -33,24 +33,36 @@ blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
 # blocks = ['red']
 
 for i in range(3):
-    player.upNext.append(Block(130 + tileSize * 23, (40 + tileSize * 14)-i*tileSize * 3, random.choice(blocks)))
+    player.upNext.append(Block(130 + tileSize * 23, (40 + tileSize * 14)-i*tileSize * 3, random.choice(blocks),1))
 
-player.blocks.append(Block(130+tileSize*5, 40+tileSize*2, random.choice(blocks)))
-block = player.blocks[-1]
-block.selected = True
+player.blocks.append(Block(130 + tileSize * 10, 40+tileSize*2, random.choice(blocks),1))
+block1 = player.blocks[-1]
+block1.selected = True
+player.blocks.append(Block(130 + tileSize * 2, 40+tileSize*2, random.choice(blocks),2))
+block2 = player.blocks[-1]
+block2.selected = True
 
 while running:
-    if block.stationary:
-        player.blocks.append(Block(130 + tileSize * 10, 40 + tileSize, player.upNext[-1].type))
-        block = player.blocks[-1]
-        block.selected = True
+    if block1.stationary:
+        player.blocks.append(Block(130 + tileSize * 10, 40 + tileSize, player.upNext[-1].type, 1))
+        block1 = player.blocks[-1]
+        block1.selected = True
         player.upNext.pop(-1)
         for block in player.upNext:
-            print(block)
             for tile in block.blocks:
                 tile.y -= tileSize * 3
-        player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks)))
-    block.move(player.tiles, player)
+        player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks),1))
+    if block2.stationary:
+        player.blocks.append(Block(130 + tileSize * 2, 40 + tileSize, player.upNext[-1].type, 2))
+        block2 = player.blocks[-1]
+        block2.selected = True
+        player.upNext.pop(-1)
+        for block in player.upNext:
+            for tile in block.blocks:
+                tile.y -= tileSize * 3
+        player.upNext.insert(0, Block(130 + tileSize * 23, (40 + tileSize * 14), random.choice(blocks), 2))
+    block1.move(player.tiles, player)
+    block2.move(player.tiles, player)
 
     scoreText.update(win, f'Score: {player.score}')
     upNextText.update(win, f'Up Next')
@@ -75,7 +87,9 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                block.rotate(player)
+                block1.rotate(player)
+            if event.key == pygame.K_w:
+                block2.rotate(player)
 
     pygame.display.flip()
     win.fill((255, 255, 255))
