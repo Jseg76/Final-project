@@ -20,6 +20,7 @@ for j in range(22):
 scoreText = Text(750, 40, 50, None, (0,0,0))
 
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
+# blocks = ['cyan']
 
 for i in range(3):
     player.upNext.append(Block(800, 300-i*90, random.choice(blocks)))
@@ -55,6 +56,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                block.rotate(player)
 
     pygame.display.flip()
     win.fill((255, 255, 255))

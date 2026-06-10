@@ -111,8 +111,6 @@ class Block:
         keys = pygame.key.get_pressed()
         if self.aTick < 5:
             self.aTick += 1
-        if self.rTick < 50:
-            self.rTick += 1
 
         if keys[pygame.K_DOWN] and not self.top_collisions(tiles, player) and not self.stationary:
             self.speed = 5
@@ -131,12 +129,26 @@ class Block:
                 self.x -= tileSize
                 self.aTick = 0
 
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP and self.type != 'yellow':
+    def testCollisions(self, player):
+        for block in self.blocks:
+            if block.x == 640 or block.x == 130 or block.y == 670:
+                return True
+            else:
+                for pBlock in player.blocks:
+                    for tile in pBlock.blocks:
+                        if tile.x == block.x and tile.y == block.y and not tile in self.blocks:
+                            return True
+        return False
+
+    def rotate(self, player):
+        if not self.type == 'yellow':
+            for image in self.blocks:
+                image.rotate(self.x, self.y, player.tiles)
+            if self.testCollisions(player):
+                print(player.tiles[-1][1].y)
+                for i in range(3):
                     for image in self.blocks:
-                        image.rotate(self.x, self.y, tiles)
-                        self.rTick = 0
+                        image.rotate(self.x, self.y, player.tiles)
 
     def draw(self, screen):
         for block in self.blocks:
@@ -149,9 +161,10 @@ class Block:
                     return True
             for pBlock in player.blocks:
                 for tile in pBlock.blocks:
-                    if block.y + tileSize == tile.y and not pBlock.selected:
+                    if block.y + tileSize == tile.y and not tile in self.blocks:
                         if block.x < tile.x + tileSize and block.x + tileSize > tile.x:
                             return True
+
         return False
 
     def right_collisions(self, tiles, player):
@@ -161,7 +174,7 @@ class Block:
                     return True
             for pBlock in player.blocks:
                 for tile in pBlock.blocks:
-                    if block.x + tileSize >= tile.x > block.x and not pBlock.selected:
+                    if block.x + tileSize >= tile.x > block.x and not tile in self.blocks:
                         if block.y == tile.y:
                             return True
         return False
@@ -173,7 +186,7 @@ class Block:
                     return True
             for pBlock in player.blocks:
                 for tile in pBlock.blocks:
-                    if tile.x + tileSize >= block.x > tile.x and not pBlock.selected:
+                    if tile.x + tileSize >= block.x > tile.x and not tile in self.blocks:
                         if block.y == tile.y:
                             return True
         return False
@@ -182,6 +195,7 @@ class Block:
         self.draw(screen)
         if self.tick % self.speed == 0:
             if not self.top_collisions(tiles, player):
+                self.stationary = False
                 for block in self.blocks:
                     block.y += tileSize
                 self.y += tileSize
@@ -190,7 +204,6 @@ class Block:
                     player.score += 1
             else:
                 self.stationary = True
-                self.selected = False
         self.tick += 1
 
 class Tile:
