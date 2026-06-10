@@ -4,6 +4,9 @@ import random
 # this initilizes the pygame module.
 pygame.init()
 
+with open('highScore.txt', 'r') as file:
+    highScore = int(file.read())
+
 running = True; clock = pygame.time.Clock()
 win = pygame.display.set_mode((1000, 700))
 
@@ -33,9 +36,10 @@ for j in range(12):
     player.nextTiles.append(row)
 
 #this defines the text
-scoreText = Text(775, 80, 50, None, (0,0,0))
-upNextText = Text(755, 130, 70, None, (0,0,0))
+scoreText = Text(735, 80, 50, None, (0,0,0))
+upNextText = Text(735, 130, 70, None, (0,0,0))
 loseText = Text(400, 300, 120, None, (20,0,0))
+highScoreText = Text(735, 50, 50, None, (0,0,0))
 
 blocks = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'cyan']
 
@@ -85,6 +89,7 @@ while running:
     #this draws and updates the text
     scoreText.update(win, f'Score: {player.score}')
     upNextText.update(win, f'Up Next')
+    highScoreText.update(win, f'High Score: {highScore}')
 
     #this updates all the game objects
     for row in player.tiles:
@@ -119,6 +124,9 @@ while running:
 
     #this shows teh losing screen if you lose
     if lost:
+        if player.score > highScore:
+            with open('highScore.txt', 'w',encoding="utf-8") as file:
+                file.write(str(player.score))
         loseText.update(win, 'You lose!')
 
     #this updates, fills, and sets the FPS of teh game loop
