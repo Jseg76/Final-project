@@ -4,8 +4,12 @@ import random
 # this initilizes the pygame module.
 pygame.init()
 
-with open('highScore.txt', 'r') as file:
-    highScore = int(file.read())
+try:
+    with open('highScore.txt', 'r') as file:
+        highScore = int(file.read())
+except:
+    highScore = 0
+
 
 running = True; clock = pygame.time.Clock()
 win = pygame.display.set_mode((1000, 700))
@@ -56,7 +60,8 @@ block2.selected = True
 
 #this is the game loop
 while running:
-    #checks is the current block for each player has fully fallen and then adds another block if it has
+    #checks is the current block for each player has fully fallen and then adds another block if it has, assuming the
+    #player has not lost yet
     if not lost:
         if block1.stationary:
             if block1.y <= 40+tileSize*2 and block1.stationary:
@@ -122,7 +127,7 @@ while running:
             if event.key == pygame.K_w:
                 block2.rotate(player)
 
-    #this shows teh losing screen if you lose
+    #this shows the losing screen if you lose
     if lost:
         if player.score > highScore:
             with open('highScore.txt', 'w',encoding="utf-8") as file:

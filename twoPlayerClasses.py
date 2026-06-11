@@ -2,10 +2,10 @@ import pygame
 
 pygame.init()
 
-#this sets the tile sie to 30 pixels
+# this sets the tile sie to 30 pixels
 tileSize = 30
 
-#this creates the player class and initilizes its variales
+# this creates the player class and initilizes its variales
 class Player:
     def __init__(self):
         self.score = 0
@@ -14,7 +14,7 @@ class Player:
         self.tiles = []
         self.nextTiles = []
 
-#this initilizes the text class
+# this initilizes the text class
 class Text:
     def __init__(self, x, y, size, font, color):
         self.x = x
@@ -24,19 +24,18 @@ class Text:
         self.size = size
         self.color = color
 
-    #this function draws the text on teh screen
-
+    # this function draws the text on the screen
     def draw(self, screen):
         font = pygame.font.Font(self.font, self.size)
         text = font.render(self.text, True, self.color)
         screen.blit(text, (self.x, self.y))
 
-    #this function updates the text whenever there is a change to it
+    # this function updates the text whenever there is a change to it
     def update(self, screen, text):
         self.text = text
         self.draw(screen)
 
-#this initilizes the image class
+# this initilizes the image class
 class Image:
     def __init__(self, x, y, image, type):
         self.x = x
@@ -46,17 +45,17 @@ class Image:
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
 
-    #this checks if the image is colliding with another object
+    # this checks if the image is colliding with another object
     def collide(self, x, y, other):
         if other.x <= x+5 <= other.x+tileSize and other.y <= y+5 <= other.y+tileSize:
             return True
         return False
 
-    #this draws the image on the screen
+    # this draws the image on the screen
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
-    #this rotates the image whenever the function is called
+    # this rotates the image whenever the function is called
     def rotate(self, x, y, tiles):
         dx = self.x - x
         dy = self.y - y
@@ -67,7 +66,7 @@ class Image:
                 self.x += x
                 self.y += y
 
-#this
+# this initilizes the variables, lists, and other important items for the block class
 class Block:
     def __init__(self, x, y, type, player):
         self.x = x
@@ -128,9 +127,12 @@ class Block:
             self.add(Image(x+tileSize*2, y, 'cyanTile.png', self.type))
             self.floatingTiles = 0
 
+    # this function adds the image that is inputed into the blocks block list.
     def add(self, image):
         self.blocks.append(image)
 
+    # this function defines the movement for the blocks by checking while player the block belongs to, then checks which
+    # key is being held down and moves the block accordingly.
     def move(self, tiles, player):
         keys = pygame.key.get_pressed()
         if self.aTick < 5:
@@ -170,6 +172,8 @@ class Block:
                     self.x -= tileSize
                     self.aTick = 0
 
+    # this function rotates the block, checks if the block collides with anything it shouldn't be colliding with, and
+    # unrotates it if it does. This function also increases the block.rotations by 1 if the rotation is successful
     def rotate(self, player):
         if not self.type == 'yellow':
             self.rotations += 1
@@ -181,10 +185,13 @@ class Block:
                     for image in self.blocks:
                         image.rotate(self.x, self.y, player.tiles)
 
+    # this function draws each image of the block onto the screen
     def draw(self, screen):
         for block in self.blocks:
             block.draw(screen)
 
+    # this function checks if the block is inside another block or out of bounds depending on which player's block it is,
+    # returning True if it collides and False otherwise
     def test_collisions(self, player):
         for block in self.blocks:
             if self.player == 2:
@@ -205,6 +212,8 @@ class Block:
                                 return True
         return False
 
+    # this function tests if the bottom of the block is colliding with the top of another block or the top of a wall tile,
+    # returning True if it does collide while returning False otherwise.
     def top_collisions(self, tiles, player):
         for block in self.blocks:
             for tile in tiles[-1]:
@@ -215,9 +224,10 @@ class Block:
                     if block.y + tileSize == tile.y and not tile in self.blocks:
                         if block.x < tile.x + tileSize and block.x + tileSize > tile.x:
                             return True
-
         return False
 
+    # this function tests if the right of the block is colliding with the left of another block or out of bounds,
+    # returning True if it is while returning False otherwise
     def right_collisions(self, tiles, player):
         if self.player == 1:
             for block in self.blocks:
@@ -242,6 +252,8 @@ class Block:
                                 return True
             return False
 
+    # this function tests if the left of the block is colliding with the right of another block or out of bounds,
+    # returning True if it is while returning False otherwise
     def left_collisions(self, tiles, player):
         if self.player == 1:
             for block in self.blocks:
@@ -266,6 +278,8 @@ class Block:
                                 return True
             return False
 
+    # this function tests to see if the block has been split in two after a row is cleared, and moves the top half of
+    # the block down one tile if it has been seperated to avoid any unintended floated blocks
     def seperate(self, player):
         if self.type == 'cyan':
             self.nonFloatingTiles = -1
@@ -298,6 +312,7 @@ class Block:
                         block.y += tileSize
                         block.floater = False
 
+    #this function updates the block, moving it down if it can and runs the seperate function if a row is cleared
     def update(self, screen, tiles, player):
         self.draw(screen)
         if self.tick % self.speed == 0:
@@ -314,6 +329,7 @@ class Block:
                 self.stationary = True
         self.tick += 1
 
+# this initilizes the variables and other important items for each tile
 class Tile:
     def __init__(self, x, y, row, type):
         self.row = row
@@ -333,6 +349,7 @@ class Tile:
             self.image = pygame.image.load('wallTile.png')
             self.image = pygame.transform.scale(self.image, (tileSize, tileSize))
 
+    # this function removes the image that is occupying the tile and setting its state back to unoccupied
     def unoccupy(self, player):
         self.occupied = False
         for block in player.blocks:
@@ -341,9 +358,12 @@ class Tile:
                     block.blocks.remove(tile)
         self.cleared = False
 
+    # this function draws the tile on the screen
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
+    # this function updates the tile, which draws the tile, tests if it's occupied, and tests if a row needs to be
+    # cleared
     def update(self, screen, blocks, tiles, player):
         self.draw(screen)
         self.occupied = False
